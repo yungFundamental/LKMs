@@ -1,0 +1,12 @@
+# Makefile builds
+.*
+!.gitignore
+*~
+*.o
+core
+*.ko
+*.mod.c
+Module.symvers
+modules.order
+*.mod
+*.a
