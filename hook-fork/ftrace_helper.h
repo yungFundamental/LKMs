@@ -8,6 +8,8 @@
 #include <linux/linkage.h>
 #include <linux/slab.h>
 #include <linux/uaccess.h>
+#include <linux/version.h>
+
 
 #if defined(CONFIG_X86_64) && (LINUX_VERSION_CODE >= KERNEL_VERSION(4,17,0))
 #define PTREGS_SYSCALL_STUBS 1
@@ -110,9 +112,15 @@ int fh_install_hook(struct ftrace_hook *hook)
      * we're modifying $rip. This is why we have to implement our own checks
      * (see USE_FENTRY_OFFSET). */
     hook->ops.func = fh_ftrace_thunk;
-    hook->ops.flags = FTRACE_OPS_FL_SAVE_REGS
-            | FTRACE_OPS_FL_RECURSION_SAFE
-            | FTRACE_OPS_FL_IPMODIFY;
+    /* Set flags based on kernel version */
+    #if LINUX_VERSION_CODE >= KERNEL_VERSION(5,11,0)
+        hook->ops.flags = FTRACE_OPS_FL_SAVE_REGS
+                        | FTRACE_OPS_FL_IPMODIFY;
+    #else
+        hook->ops.flags = FTRACE_OPS_FL_SAVE_REGS
+                        | FTRACE_OPS_FL_RECURSION_SAFE
+                        | FTRACE_OPS_FL_IPMODIFY;
+    #endif
 
     err = ftrace_set_filter_ip(&hook->ops, hook->address, 0, 0);
     if(err)
