@@ -2,6 +2,7 @@
  * Helper library for ftrace hooking kernel functions
  * Author: Harvey Phillips (xcellerator@gmx.com)
  * License: GPL
+ * Amit's Notes: Written in 2020, with Ubuntu 20 in mind (kernel version 5.3), still doesn't support the changes done to ftrace in kernel version 5.11.  
  * */
 
 #include <linux/ftrace.h>
