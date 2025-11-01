@@ -2,6 +2,7 @@
 #include <linux/module.h>
 #include <linux/sched.h>
 #include <linux/version.h>
+#include "ftrace_helper.h"
 
 
 MODULE_LICENSE("Dual BSD/GPL");
@@ -41,15 +42,28 @@ static asmlinkage pid_t hooked_fork(const struct pt_regs *registers)
 
 #endif
 
+static struct ftrace_hook hooks[] = {
+    HOOK("sys_fork", hooked_fork, &orig_fork)
+};
+
 static int fork_hook_init(void)
 {
+    int err;
+    err = fh_install_hooks(hooks, ARRAY_SIZE(hooks));
+    if (err)
+    {
+        printk(KERN_ALERT "Failed to install hook\n");
+        return err;
+    }
+    
 	printk(KERN_INFO "Hooking the fork syscall\n");
 	return 0;
 }
 
 static void fork_hook_exit(void)
 {
-	printk(KERN_ALERT "Removing the fork syscall hook\n");
+    fh_remove_hooks(hooks, ARRAY_SIZE(hooks));
+	printk(KERN_INFO "Removing the fork syscall hook\n");
 }
 
 module_init(fork_hook_init);
