@@ -4,6 +4,8 @@
  * License: GPL
  * Amit's Notes: Written in 2020, with Ubuntu 20 in mind (kernel version 5.3), still doesn't support the changes done to ftrace in kernel version 5.11.  
  * */
+#ifndef FTRACE_HELPER_M
+#define FTRACE_HELPER_M
 
 #include <linux/ftrace.h>
 #include <linux/linkage.h>
@@ -191,3 +193,4 @@ void fh_remove_hooks(struct ftrace_hook *hooks, size_t count)
     for (i = 0 ; i < count ; i++)
         fh_remove_hook(&hooks[i]);
 }
+#endif // FTRACE_HELPER_M
