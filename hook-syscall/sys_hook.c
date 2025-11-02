@@ -24,11 +24,11 @@ static int sys_hooks_init(void)
     return 0;
 }
 
-static void fork_hook_exit(void)
+static void sys_hooks_exit(void)
 {
     fh_remove_hooks(hooks, ARRAY_SIZE(hooks));
     printk(KERN_INFO "sys_hook: Removed hooks\n");
 }
 
-module_init(fork_hook_init);
-module_exit(fork_hook_exit);
+module_init(sys_hooks_init);
+module_exit(sys_hooks_exit);
