@@ -1,4 +1,4 @@
-obj-m += hook-fork.o
+obj-m += sys_hook.o
 
 all:
 	make -C /lib/modules/$(shell uname -r)/build M=$(PWD) modules
