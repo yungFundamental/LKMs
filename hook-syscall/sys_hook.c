@@ -7,7 +7,7 @@
 
 MODULE_LICENSE("Dual BSD/GPL");
 MODULE_AUTHOR("Amit Barzilai");
-MODULE_DESCRIPTION("Hooks the fork syscall and prints a to the kernel buffer the PID that called the syscall.");
+MODULE_DESCRIPTION("Hooks syscalls.");
 
 
 static int sys_hooks_init(void)
