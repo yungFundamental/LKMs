@@ -2,6 +2,7 @@
 #include <linux/module.h>
 #include <linux/version.h>
 #include "ftrace_helper.h"
+#include "fork_hook.h"
 #include "mkdir_hook.h"
 
 
@@ -9,6 +10,10 @@ MODULE_LICENSE("Dual BSD/GPL");
 MODULE_AUTHOR("Amit Barzilai");
 MODULE_DESCRIPTION("Hooks syscalls.");
 
+static struct ftrace_hook hooks[] = {
+	mkdir_hook,
+	fork_hook
+};
 
 static int sys_hooks_init(void)
 {

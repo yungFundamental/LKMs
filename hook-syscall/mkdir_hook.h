@@ -38,7 +38,5 @@ asmlinkage long hooked_mkdir(const struct pt_regs *registers)
 
 #endif
 
-static struct ftrace_hook hooks[] = {
-    HOOK("sys_mkdir", hooked_mkdir, &orig_mkdir)
-};
+const struct ftrace_hook mkdir_hook = HOOK("sys_mkdir", hooked_mkdir, &orig_mkdir);
 
