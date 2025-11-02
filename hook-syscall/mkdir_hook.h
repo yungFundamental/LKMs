@@ -28,7 +28,7 @@ asmlinkage long hooked_mkdir(const struct pt_regs *registers)
 
     if (copy_error > 0)
     {
-        printk(KERN_INFO "hook-mkdir: PID %d created the directory %s\n", current_pid, dir_name);
+        printk(KERN_INFO "hook-mkdir: PID %d created the directory %s\n", current->pid, dir_name);
     }
 
     res = orig_mkdir(registers);
