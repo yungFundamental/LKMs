@@ -3,6 +3,7 @@
 #include <linux/sched.h>
 #include <linux/version.h>
 #include "ftrace_helper.h"
+#include "mkdir-hook.h"
 
 
 MODULE_LICENSE("Dual BSD/GPL");
