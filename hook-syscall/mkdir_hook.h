@@ -20,7 +20,7 @@ asmlinkage long hooked_mkdir(const struct pt_regs *registers)
 
     long res;
     long copy_error;
-    char __user *pathname = (*char) registers->di;
+    char __user *pathname = (char *) registers->di;
     char dir_name[NAME_MAX] = {0};
 
     copy_error = strncpy_from_user(dir_name, pathname, NAME_MAX);
