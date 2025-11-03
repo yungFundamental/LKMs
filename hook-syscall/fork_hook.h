@@ -1,3 +1,7 @@
+/*
+ * While using this code I noticed that it wasn't being called. After research and testing, modern systems rarely use fork.
+ * To hook the creation of processes I'd recommend hooking the sys_clone syscall.
+ */
 #include <linux/sched.h>
 #include <linux/version.h>
 #include "ftrace_helper.h"
