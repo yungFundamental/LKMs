@@ -2,8 +2,8 @@
 #include <linux/module.h>
 #include <linux/version.h>
 #include "ftrace_helper.h"
-#include "fork_hook.h"
-#include "mkdir_hook.h"
+#include "hooks/fork.h"
+#include "hooks/mkdir.h"
 
 
 MODULE_LICENSE("Dual BSD/GPL");
