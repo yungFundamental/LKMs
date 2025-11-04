@@ -36,6 +36,26 @@ asmlinkage long hooked_mkdir(const struct pt_regs *registers)
 }
 #else
 
+static asmlinkage pid_t (*orig_mkdir)(const char __user *pathname, umode_t mode);
+
+asmlinkage long hooked_mkdir(const char __user *pathname, umode_t mode)
+{
+
+    long res;
+    long copy_error;
+    char dir_name[NAME_MAX] = {0};
+
+    copy_error = strncpy_from_user(dir_name, pathname, NAME_MAX);
+
+
+    if (copy_error > 0)
+    {
+        printk(KERN_INFO "hook-mkdir: PID %d created the directory %s\n", current->pid, dir_name);
+    }
+
+    res = orig_mkdir(registers);
+    return res;
+}
 #endif
 
 const struct ftrace_hook mkdir_hook = HOOK("sys_mkdir", hooked_mkdir, &orig_mkdir);

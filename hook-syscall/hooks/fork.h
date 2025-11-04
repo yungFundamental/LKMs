@@ -38,6 +38,29 @@ static asmlinkage pid_t hooked_fork(const struct pt_regs *registers)
 }
 #else
 
+static asmlinkage pid_t (*orig_fork)();
+static asmlinkage pid_t hooked_fork()
+{
+    pid_t current_pid;
+    pid_t res;
+
+    current_pid = current->pid;
+    res = orig_fork();
+
+    if (res <= -1)
+    {
+        printk(KERN_ALERT "hook-fork: error - sys_fork of %d returned %d", current_pid, res);
+        return res;
+    }
+    if (res == 0)
+    {
+        printk(KERN_INFO "hook-fork: child_process - sys_fork of %d returned %d", current_pid, res);
+        return res;
+    }
+
+    printk(KERN_INFO "hook-fork: parent_process - sys_fork of %d returned %d", current_pid, res);
+    return res;
+}
 #endif
 
 const struct ftrace_hook fork_hook = HOOK("sys_fork", hooked_fork, &orig_fork);
