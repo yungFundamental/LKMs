@@ -15,8 +15,13 @@ MODULE_LICENSE("Dual BSD/GPL");
 MODULE_AUTHOR("Amit Barzilai");
 MODULE_DESCRIPTION("Trampoline hook");
 #define HOOKED_FUNCTION_NAME "iterate_dir"
+#define BYTES_TO_REPLACE 5
+
+static unsigned char replaced_bytes[BYTES_TO_REPLACE];
 
 static u8 call_opcode = 0xe8;
+// static void *calling_address;
+// static void *return_address;
 
 int make_page_writable(unsigned long address) {
     unsigned int level;
@@ -34,12 +39,15 @@ int make_page_writable(unsigned long address) {
 void hooker(void)
 {
     printk(KERN_INFO "Trampoline: get hooked douchebag!\n");
+    return;
+    // return_address = calling_address + BYTES_TO_REPLACE;
+    // asm volatile("jmp *%0" : : "m"(return_address));
 }
 
 static int sys_hooks_init(void)
 {
-    void *calling_address;
     u32 relative_hooker_address;
+    void *calling_address;
 
     calling_address = (void *)kallsyms_lookup_name(HOOKED_FUNCTION_NAME);
     if (!calling_address)
@@ -55,8 +63,11 @@ static int sys_hooks_init(void)
     }
     printk(KERN_INFO "trampoline: set memory page of %016lX as writable\n", (unsigned long)calling_address);
 
+    printk(KERN_INFO "trampoline: Extracting %u bytes the start of %s\n", BYTES_TO_REPLACE, HOOKED_FUNCTION_NAME);
+    memcpy(replaced_bytes, calling_address, BYTES_TO_REPLACE);
+    printk(KERN_INFO "trampoline: extracted the previous byte\n");
+
     relative_hooker_address = (void *)hooker - (calling_address + 5);
-    printk(KERN_INFO "trampoline: calling function contains %016lX\n", *((unsigned long *)calling_address));
     printk(KERN_INFO "trampoline: Writing CALL to relative address %08X to %016lX\n", relative_hooker_address, (long unsigned)calling_address);
     memcpy(calling_address, &call_opcode, 1);
     memcpy(calling_address + 1, &relative_hooker_address, 4);
