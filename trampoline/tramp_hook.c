@@ -58,15 +58,10 @@ static int sys_hooks_init(void)
 
     hooked_func_page = (unsigned long)calling_address & PAGE_MASK;
     printk(KERN_INFO "trampoline: Calculated page addr at %016lX\n", hooked_func_page);
-    // if (set_memory_rw(hooked_func_page, 1)) {
-    //     printk(KERN_ERR "trampoline: Failed to set page for RW\n");
-    //     return -EPERM;
-    // }
     
-    if (make_page_writable((unsigned long)calling_address))
-    {
-	printk(KERN_ALERT "trampoline: Unable to make page writable\n");
-	return -1;
+    if (make_page_writable((unsigned long)calling_address)) {
+	    printk(KERN_ALERT "trampoline: Unable to make page writable\n");
+	    return -1;
     }
     printk(KERN_INFO "trampoline: set page addr at %016lX as RW\n", hooked_func_page);
 
