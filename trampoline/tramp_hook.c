@@ -18,6 +18,10 @@ MODULE_DESCRIPTION("Trampoline hook");
 #define BYTES_TO_REPLACE 5
 
 static unsigned char replaced_bytes[BYTES_TO_REPLACE];
+typedef struct regs {
+    unsigned long rdi;
+    unsigned long rsi;
+} regs_t;
 
 static u8 call_opcode = 0xe8;
 // static void *calling_address;
@@ -35,10 +39,33 @@ int make_page_writable(unsigned long address) {
     __flush_tlb_one(address);
     return 0;
 }
+static void save_registers(regs_t *regs)
+{
+    asm volatile (
+	"mov %%rsi, %0\n\t"
+	"mov %%rdi, %1\n\t"
+	: "=m" (regs->rsi), "=m" (regs->rdi)
+	:
+	: "memory"
+    );
+}
+
+static void load_registers(regs_t *regs)
+{
+    asm volatile (
+	""
+	:
+	: "S" (regs->rsi), "D" (regs->rdi)
+	: "memory"
+    );
+}
 
 void hooker(void)
 {
+    regs_t caller_regs;
+    save_registers(&caller_regs);
     printk(KERN_INFO "Trampoline: get hooked douchebag!\n");
+    load_registers(&caller_regs);
     return;
     // return_address = calling_address + BYTES_TO_REPLACE;
     // asm volatile("jmp *%0" : : "m"(return_address));
