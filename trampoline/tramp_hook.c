@@ -18,13 +18,12 @@ MODULE_DESCRIPTION("Trampoline hook");
 typedef pte_t *(*lookup_address_t)(unsigned long address, unsigned int *level);
 
 static u8 call_opcode = 0xe8;
-static lookup_address_t my_lookup_address;
 
 int make_page_writable(unsigned long address) {
     unsigned int level;
     pte_t *pte;
     
-    pte = my_lookup_address(address, &level);
+    pte = lookup_address(address, &level);
     if (!pte) 
 	return -EINVAL;
     
@@ -45,14 +44,6 @@ static int sys_hooks_init(void)
     unsigned long hooked_func_page;
     struct page *page;
     char arr[4] = "abc";
-    my_lookup_address = (lookup_address_t)kallsyms_lookup_name("lookup_address");
-    
-    if (!my_lookup_address) {
-        pr_err("Failed to find lookup_address\n");
-        return -EINVAL;
-    }
-    
-    pr_info("Found lookup_address at %p\n", my_lookup_address);
 
     calling_address = (void *)kallsyms_lookup_name("iterate_dir");
     if (!calling_address)
