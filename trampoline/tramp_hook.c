@@ -53,11 +53,11 @@ static int sys_hooks_init(void)
 	printk(KERN_ALERT "trampoline: Unable to make page writable\n");
 	return -1;
     }
-    printk(KERN_INFO "trampoline: set memory page %016lX as writable\n", (unsigned long)calling_address);
+    printk(KERN_INFO "trampoline: set memory page of %016lX as writable\n", (unsigned long)calling_address);
 
     relative_hooker_address = (void *)hooker - (calling_address + 5);
-    printk(KERN_INFO "trampoline: Writing %08X to %016lX\n", relative_hooker_address, (long unsigned)calling_address);
     printk(KERN_INFO "trampoline: calling function contains %016lX\n", *((unsigned long *)calling_address));
+    printk(KERN_INFO "trampoline: Writing CALL to relative address %08X to %016lX\n", relative_hooker_address, (long unsigned)calling_address);
     memcpy(calling_address, &call_opcode, 1);
     memcpy(calling_address + 1, &relative_hooker_address, 4);
     
