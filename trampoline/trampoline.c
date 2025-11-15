@@ -35,16 +35,22 @@ int tramp_hook_install(hook_t *hook)
 {
     u32 relative_hooker_address;
     void *target;
+    int err;
 
     target = (void *)kallsyms_lookup_name(hook->target_name);
     if (!target) {
         printk(KERN_ALERT "Failed looking for symbol %s while installing hook", hook->target_name);
         return -EINVAL;
     }
-    make_page_writable(target)
+
+    err = make_page_writable((long unsigned)target);
+    if (err) {
+        printk(KERN_ALERT "Unable to make the page of address %p writable", target);
+        return err;
+    }
 
 
-    hook->original_function = target + 0 // TODO Add bytes added
+    hook->original_function = target + 0; // TODO Add bytes added
     return 0;
 }
 
