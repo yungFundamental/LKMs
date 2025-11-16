@@ -1,4 +1,6 @@
-obj-m += tramp_hook.o
+obj-m += log_ls.o
+log_ls-objs := main.o trampoline/trampoline.o
+
 ccflags-y += -I$(src)
 
 all:
