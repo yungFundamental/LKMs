@@ -1,9 +1,21 @@
-obj-m += log_ls.o
-log_ls-objs := main.o trampoline/trampoline.o
+# Name of module
+obj-m := log_ls.o
+
+# Objects that form the module (main + trampoline)
+log_ls-objs := trampoline/trampoline.o main.o
+
+ccflags-y += -I$(src)
+
+# Kernel build system
+KDIR := /lib/modules/$(shell uname -r)/build
+PWD  := $(shell pwd)
+
+# Add include path for trampoline.h
+ccflags-y += -I$(PWD)/trampoline
 
 all:
-	make -C /lib/modules/$(shell uname -r)/build M=$(PWD) modules
+	$(MAKE) -C $(KDIR) M=$(PWD) modules
 
 clean:
-	make -C /lib/modules/$(shell uname -r)/build M=$(PWD) clean
+	$(MAKE) -C $(KDIR) M=$(PWD) clean
 
