@@ -1,6 +1,15 @@
+#include <linux/string.h>
+#include <linux/mman.h>
+#include <asm/cacheflush.h>
+#include <linux/init.h>
+#include <linux/module.h>
+#include <linux/version.h>
 #include <linux/kallsyms.h>
-#include <asm/pgtable.h>
 #include <linux/types.h>
+#include <linux/mm.h>
+#include <asm/tlbflush.h>
+#include <asm/pgtable.h>
+
 #include "trampoline.h"
 
 
