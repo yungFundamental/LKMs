@@ -33,7 +33,7 @@ static int make_page_readonly(unsigned long address)
     return 0;
 }
 
-int tramp_hook_install(hook_t *hook)
+int tramp_hook_install(const hook_t *hook)
 {
     u32 relative_hooker_address;
     void *target;
@@ -64,7 +64,7 @@ int tramp_hook_install(hook_t *hook)
 }
 
 
-void tramp_hook_uninstall(hook_t *hook)
+void tramp_hook_uninstall(const hook_t *hook)
 {
     void *target;
     static const u8 nop_opcodes[TRAMPOLINE_BYTES_REPLACED] = {0x0f, 0x1f, 0x44, 0x00, 0x00};
