@@ -25,13 +25,20 @@ static const hook_t iterate_dir_hook = {
 
 static int hook_ls_init(void)
 {
-
+    int err;
+    err = tramp_hook_install(&iterate_dir_hook);
+    if (err) {
+        printk(KERN_ALERT "Failed installing hook\n");
+        return err;
+    }
+    printk(KERN_INFO "Installed iterate_dir hook\n");
 	return 0;
 }
 
 static void hook_ls_exit(void)
 {
-	printk(KERN_ALERT "Goodbye, cruel world\n");
+    tramp_hook_uninstall(&iterate_dir_hook);
+	printk(KERN_INFO "Removed iterate_dir hook\n");
 }
 
 module_init(hook_ls_init);
