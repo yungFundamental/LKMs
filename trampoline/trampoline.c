@@ -51,12 +51,10 @@ int tramp_hook_install(hook_t *hook)
     }
 
     relative_hooker_address = hook->function - (target + 5);
-    memcpy(target, &jmp_opcode, 1);
-    memcpy(target + 1, &relative_hooker_address, 4);
+    memcpy(target, &jmp_opcode, sizeof(jmp_opcode));
+    memcpy(target + 1, &relative_hooker_address, sizeof(relative_hooker_address));
 
-
-
-    hook->original_function = target + 0; // TODO Add bytes added
+    hook->original_function = target + sizeof(jmp_opcode) + sizeof(relative_hooker_address);
     return 0;
 }
 
