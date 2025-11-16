@@ -3,9 +3,9 @@
 #include <linux/types.h>
 #include "trampoline.h"
 
-static u8 jmp_opcode = 0xe9;
 
-static int make_page_writable(unsigned long address) {
+static int make_page_writable(unsigned long address) 
+{
     unsigned int level;
     pte_t *pte;
     
@@ -18,7 +18,8 @@ static int make_page_writable(unsigned long address) {
     return 0;
 }
 
-static int make_page_readonly(unsigned long address) {
+static int make_page_readonly(unsigned long address) 
+{
     unsigned int level;
     pte_t *pte;
     
@@ -38,6 +39,8 @@ int tramp_hook_install(hook_t *hook)
     void *target;
     int err;
 
+    static const u8 jmp_opcode = 0xe9;
+
     target = (void *)kallsyms_lookup_name(hook->target_name);
     if (!target) {
         printk(KERN_ALERT "Failed looking for symbol %s while installing hook", hook->target_name);
@@ -54,7 +57,19 @@ int tramp_hook_install(hook_t *hook)
     memcpy(target, &jmp_opcode, sizeof(jmp_opcode));
     memcpy(target + 1, &relative_hooker_address, sizeof(relative_hooker_address));
 
-    hook->original_function = target + sizeof(jmp_opcode) + sizeof(relative_hooker_address);
+    make_page_readonly((long unsigned)target);
+
+    hook->original_function = target + TRAMPOLINE_BYTES_REPLACED;  // Must be equal to sizeof(jmp_opcode) + sizeof(relative_hooker_address)
     return 0;
 }
 
+
+void tramp_hook_uninstall(hook_t *hook)
+{
+    static const u8 nop_opcodes[TRAMPOLINE_BYTES_REPLACED] = {0x0f, 0x1f, 0x44, 0x00, 0x00};
+    make_page_writable((long unsigned)hook->original_function - TRAMPOLINE_BYTES_REPLACED);
+
+    memcpy(hook->original_function - TRAMPOLINE_BYTES_REPLACED, nop_opcodes, sizeof(nop_opcodes));
+
+    make_page_readonly((long unsigned)hook->original_function - TRAMPOLINE_BYTES_REPLACED);
+}

@@ -8,9 +8,12 @@ typedef struct hook {
 
 }hook_t;
 
+// This would potentially increase on systems with CET
+#define TRAMPOLINE_BYTES_REPLACED 5
+
 
 int tramp_hook_install(hook_t *hook);
-int tramp_hook_uninstall(hook_t *hook);
+void tramp_hook_uninstall(hook_t *hook);
 
 
 #endif // !TRAMPOLINE_HOOKS
