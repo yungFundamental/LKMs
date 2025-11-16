@@ -4,7 +4,7 @@
 typedef struct hook {
     const char *target_name;
     void *function;
-    void *original_function;
+    void **original_function;
 
 }hook_t;
 

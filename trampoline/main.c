@@ -1,5 +1,6 @@
 #include <linux/init.h>
 #include <linux/module.h>
+#include <linux/fs.h>
 #include "trampoline/trampoline.h"
 
 
@@ -7,9 +8,12 @@ MODULE_LICENSE("Dual BSD/GPL");
 MODULE_AUTHOR("Amit Barzilai");
 MODULE_DESCRIPTION("Trampoline hook");
 
+static int (*orig_iterate_dir)(struct file *, struct dir_context *);
+static 
+
 static int hook_ls_init(void)
 {
-	printk(KERN_ALERT "Hello, world\n");
+
 	return 0;
 }
 

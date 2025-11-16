@@ -59,17 +59,20 @@ int tramp_hook_install(hook_t *hook)
 
     make_page_readonly((long unsigned)target);
 
-    hook->original_function = target + TRAMPOLINE_BYTES_REPLACED;  // Must be equal to sizeof(jmp_opcode) + sizeof(relative_hooker_address)
+    *(hook->original_function) = target + TRAMPOLINE_BYTES_REPLACED;  // Must be equal to sizeof(jmp_opcode) + sizeof(relative_hooker_address)
     return 0;
 }
 
 
 void tramp_hook_uninstall(hook_t *hook)
 {
+    void *target;
     static const u8 nop_opcodes[TRAMPOLINE_BYTES_REPLACED] = {0x0f, 0x1f, 0x44, 0x00, 0x00};
-    make_page_writable((long unsigned)hook->original_function - TRAMPOLINE_BYTES_REPLACED);
 
-    memcpy(hook->original_function - TRAMPOLINE_BYTES_REPLACED, nop_opcodes, sizeof(nop_opcodes));
+    target = *(hook->original_function) - TRAMPOLINE_BYTES_REPLACED;
+    make_page_writable((long unsigned)target);
 
-    make_page_readonly((long unsigned)hook->original_function - TRAMPOLINE_BYTES_REPLACED);
+    memcpy(target, nop_opcodes, sizeof(nop_opcodes));
+
+    make_page_readonly((long unsigned)target);
 }
