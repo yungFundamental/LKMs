@@ -3,6 +3,7 @@
 #include <linux/types.h>
 #include "trampoline.h"
 
+static u8 jmp_opcode = 0xe9;
 
 static int make_page_writable(unsigned long address) {
     unsigned int level;
@@ -48,6 +49,11 @@ int tramp_hook_install(hook_t *hook)
         printk(KERN_ALERT "Unable to make the page of address %p writable", target);
         return err;
     }
+
+    relative_hooker_address = hook->function - (target + 5);
+    memcpy(target, &jmp_opcode, 1);
+    memcpy(target + 1, &relative_hooker_address, 4);
+
 
 
     hook->original_function = target + 0; // TODO Add bytes added
